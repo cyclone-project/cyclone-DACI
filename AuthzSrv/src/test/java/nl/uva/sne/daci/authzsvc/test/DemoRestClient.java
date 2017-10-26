@@ -1,4 +1,4 @@
-package nl.uva.sne.daci.appsec;
+package nl.uva.sne.daci.authzsvc.test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,23 +8,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nl.uva.sne.daci.appsec.AuthzRequest;
-import nl.uva.sne.daci.appsec.AuthzResponse;
-import nl.uva.sne.daci.appsec.AuthzSvc;
+import nl.uva.sne.daci.authzsvc.AuthzRequest;
+import nl.uva.sne.daci.authzsvc.AuthzResponse;
+import nl.uva.sne.daci.authzsvc.AuthzSvc;
 
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -45,7 +51,7 @@ public class DemoRestClient {
         	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "intertenantPolicy", "localhost", "demo-uva");
         	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "tenantUserPolicy", "localhost", "demo-uva");
         	
-        	AuthzRequest ar = createRequest("a", "listPowerPlants", "execute");	
+        	AuthzRequest ar = AuthzSrvImplTester.createRequest("fisfeps", "listPowerPlants", "execute");	
         	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1")) 
         		System.out.println("SUCCESS!");
     		else System.out.println("NOT AUTHORIZED!!!");
@@ -100,24 +106,25 @@ public class DemoRestClient {
 		return request;
 	}
 	
+
 	
 
-	private void  setPolicy(String tenantId, String policyFile, String endPoint, String redisAddress, String domain) throws Exception {
+	private void  setPolicy(String tenantId, String policyFile, String endPoint, 
+											 String redisAddress, String domain) throws Exception {
 		
 		String output = null;
         String url = "http://localhost:8092/" + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
-        //ObjectMapper mapper = new ObjectMapper();
         try{
-            HttpPost mPost = new HttpPost(url);
-  
-            //mPost.setHeader("Content-Type", "application/xml");
-            //mPost.setHeader("accept", "application/xml");
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+            nameValuePairs.add(new BasicNameValuePair("redisAddress", redisAddress));
+            nameValuePairs.add(new BasicNameValuePair("domain", domain));
+            nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
             
-            mPost.setEntity(new StringEntity(tenantId));
-            mPost.setEntity(new StringEntity(redisAddress));
-            mPost.setEntity(new StringEntity(domain));
-            
+            URIBuilder uri = new URIBuilder(url);
+            uri.setParameters(nameValuePairs);
+            HttpPost mPost = new HttpPost(uri.toString());
+
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             File f = new File(policyFile);
             builder.addBinaryBody(
@@ -129,67 +136,50 @@ public class DemoRestClient {
 
             HttpEntity multipart = builder.build();
             mPost.setEntity(multipart);
-            	
-            //FileEntity entity = new FileEntity(new File(policyFile));
-            //entity.setContentType(ContentType.APPLICATION_XML.getMimeType());
-            //mPost.setEntity(entity);      
-
+            
             HttpResponse response = client.execute(mPost); 
             
             output = response.toString();
             mPost.releaseConnection( );
-            System.out.println("Response : " + output);
+            //System.out.println("Response : " + output);
             
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
         	
         }	
 	}
+	
 
 
-
+	
 
 	private void  createTenant(String tenantId, String redisAddress, String domain) throws Exception {
 		
 		String output = null;
         String url = "http://localhost:8092/tenants";
-        HttpClient client = HttpClientBuilder.create().build();
-        //ObjectMapper mapper = new ObjectMapper();
-       
-        try{
-        	HttpPost mPost = new HttpPost(url);
-        	//mPost.setHeader("Content-Type", "application/json");
-            //mPut.setHeader("accept", "application/json");
-            
-        	mPost.setEntity(new StringEntity(redisAddress));
-        	mPost.setEntity(new StringEntity(domain));
-        	mPost.setEntity(new StringEntity(tenantId));
-            //FileEntity entity = new FileEntity(new File(policyFile));
-            //entity.setContentType(ContentType.APPLICATION_XML.getMimeType());
-            //mPost.setEntity(entity);      
+        HttpClient client = HttpClients.createDefault();
+        ObjectMapper mapper = new ObjectMapper();
+ 
+        HttpPost mPost = new HttpPost(url);
 
-            HttpResponse response = client.execute(mPost); 
-            output = response.toString();
-            mPost.releaseConnection( );
-            System.out.println("Response... : " + output);
-            
-        	/*HttpPut mPut = new HttpPut(url);
-            mPut.setHeader("Content-Type", "application/json");
-            mPut.setEntity(new StringEntity("localhost"));
-            mPut.setEntity(new StringEntity("demo-uva"));
-            mPut.setEntity(new StringEntity(tenantId));
-            HttpResponse response = client.execute(mPut); 
-            output = response.toString();
-            mPut.releaseConnection( );
-            System.out.println("Response... : " + output);*/
-            
-        }catch(Exception e){
-        	throw new Exception("Exception in adding bucket : " + e.getMessage());
-        	
-        }	     	
+        try {
+	        Map<String, String> params = new HashMap<String, String>();
+	        params.put("redisAddress", redisAddress);
+	        params.put("domain", domain);
+	        params.put("tenantId",tenantId);
+	        mPost.setEntity(new StringEntity(mapper.writeValueAsString(params)));
+	        mPost.setHeader("Content-type", "application/json");
+	        HttpResponse response = client.execute(mPost); 
+	        output = response.toString();
+	        mPost.releaseConnection( );
+            //System.out.println("Response from Tenant Srv... : " + output);
+        }catch (Exception e) {
+                e.printStackTrace();
+        }
+
 	}
 	
-	/*TODO : Add removeTenant call as well*/
+
 
 	 
 	

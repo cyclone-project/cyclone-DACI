@@ -27,7 +27,7 @@ public class Application implements ApplicationRunner{
         if (args.containsOption("token_srv_port")) 
         	Configuration.TOKEN_SVC_PORT = args.getOptionValues("token_srv_port").get(0);
         if (args.containsOption("token_srv_address")) 
-        	Configuration.TOKEN_SVC_URL = args.getOptionValues("token_srv_address").get(0) +
+        	Configuration.TOKEN_SVC_URL = "http://"+args.getOptionValues("token_srv_address").get(0) + ":" +
         								    Configuration.TOKEN_SVC_PORT + "/tokens";
         if (args.containsOption("domain")) 
         	Configuration.DOMAIN = args.getOptionValues("domain").get(0);

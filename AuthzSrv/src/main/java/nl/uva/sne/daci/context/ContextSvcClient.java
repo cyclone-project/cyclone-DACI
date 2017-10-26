@@ -66,7 +66,7 @@ public class ContextSvcClient {
 
 	 
 	 /* This is teh alternative implementation with httpclient....*/
-	ContextBaseResponse validate(ContextRequest request) throws Exception {
+	ContextBaseResponse validate(ContextRequest request, String tenantId) throws Exception {
 	
 		HttpClient client = HttpClientBuilder.create().build();
 	    ObjectMapper mapper = new ObjectMapper();
@@ -76,9 +76,10 @@ public class ContextSvcClient {
 	        mPost.setHeader("Content-Type", "application/json");
 	        mPost.setHeader("accept", "application/json");
 	            
-	        mPost.setEntity(new StringEntity(""));
+	        mPost.setEntity(new StringEntity(tenantId));
 	        mPost.setEntity(new StringEntity(mapper.writeValueAsString(request)));         
 	            
+	        
 	        HttpResponse response = client.execute(mPost); 
 	            
 	           

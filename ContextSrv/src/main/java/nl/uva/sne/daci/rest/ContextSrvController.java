@@ -47,7 +47,8 @@ public class ContextSrvController{
 	  
 	  try {
 		  
-		    ContextSvcImpl contextSvc;
+		    
+		  	ContextSvcImpl contextSvc;
 		    contextSvc = new ContextSvcImpl(Configuration.DOMAIN, Configuration.REDIS_SERVER_ADDRESS);
 		    contextSvc.init();
 		    

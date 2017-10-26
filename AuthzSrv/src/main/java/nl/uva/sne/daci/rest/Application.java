@@ -28,7 +28,7 @@ public class Application implements ApplicationRunner{
         if (args.containsOption("context_srv_port")) 
         	Configuration.CONTEXT_SVC_PORT = args.getOptionValues("context_srv_port").get(0);
         if (args.containsOption("context_srv_address")) 
-        	Configuration.CONTEXT_SVC_URL = args.getOptionValues("context_srv_address").get(0) +
+        	Configuration.CONTEXT_SVC_URL = "http://"+args.getOptionValues("context_srv_address").get(0) + ":"+
         								    Configuration.CONTEXT_SVC_PORT + "/contexts";
         if (args.containsOption("domain")) 
         	Configuration.DOMAIN = args.getOptionValues("domain").get(0);
