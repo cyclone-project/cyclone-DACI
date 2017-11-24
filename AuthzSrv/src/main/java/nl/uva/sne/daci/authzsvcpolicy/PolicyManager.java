@@ -35,7 +35,7 @@ public class PolicyManager {
 		config.setMaxTotal(1000);
 		config.setMaxIdle(1000);
 		jedisPool = new JedisPool(config, this.serverAddress);
-		System.out.println("REDIS ADDRESS FOr authz service .. " + this.serverAddress);
+		//System.out.println("REDIS ADDRESS FOr authz service .. " + this.serverAddress);
 	}
 
 	public PolicyFinder createPolicyFinder(String tenantId) {

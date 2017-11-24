@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 /**
- * @author canhnt
+ * @author fturkmen
  *
  */
 public class TenantSvcImpl implements TenantSvc {

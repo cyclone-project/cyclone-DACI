@@ -46,13 +46,13 @@ public class DemoRestClient {
 	public static void main(String[] args) {
         DemoRestClient restClient = new DemoRestClient();
         try {
-        	restClient.createTenant("Energy_Tenant1", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", providerPolicy, "providerPolicy", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "intertenantPolicy", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "tenantUserPolicy", "localhost", "demo-uva");
+        	restClient.createTenant("Energy_Tenant1", "http://localhost", "8092", "tenants", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", providerPolicy, "http://localhost", "8092", "providerPolicy", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "http://localhost", "8092", "intertenantPolicy", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "http://localhost", "8092", "tenantUserPolicy", "localhost", "demo-uva");
         	
         	AuthzRequest ar = AuthzSrvImplTester.createRequest("fisfeps", "listPowerPlants", "execute");	
-        	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1")) 
+        	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1","http://localhost", "8089")) 
         		System.out.println("SUCCESS!");
     		else System.out.println("NOT AUTHORIZED!!!");
         } catch (Exception e) {
@@ -63,10 +63,12 @@ public class DemoRestClient {
 	
 	
 	/*This will be direct check, call the service...*/
-	public boolean readPrivateData_Integrated(AuthzRequest ar, String tenantId) throws Exception{
+	public boolean readPrivateData_Integrated(AuthzRequest ar, String tenantId,
+											  String authzSrvAddress, String authzSrvPort) throws Exception{
 			
 			
-			AuthzSvc.DecisionType res = authorize(ar, tenantId).getDecision();
+			AuthzSvc.DecisionType res = authorize(ar, tenantId, authzSrvAddress, authzSrvPort,
+					  								"/pdps/" + tenantId+"/decision").getDecision();
 			if (res.equals(AuthzSvc.DecisionType.PERMIT))
 				return readPrivateData();
 			else return false;
@@ -110,10 +112,11 @@ public class DemoRestClient {
 	
 
 	private void  setPolicy(String tenantId, String policyFile, String endPoint, 
+											 String tenantSrvAddress, String tenantSrvPort, 
 											 String redisAddress, String domain) throws Exception {
 		
 		String output = null;
-        String url = "http://localhost:8092/" + endPoint;
+        String url = tenantSrvAddress + ":"+ tenantSrvPort + "/" + endPoint;//"http://localhost:8092/" + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         try{
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
@@ -153,10 +156,12 @@ public class DemoRestClient {
 
 	
 
-	private void  createTenant(String tenantId, String redisAddress, String domain) throws Exception {
+	private void  createTenant(String tenantId, String tenantSrvAddress, String tenantSrvPort, 
+												String endPoint, String redisAddress, 
+												String domain) throws Exception {
 		
 		String output = null;
-        String url = "http://localhost:8092/tenants";
+        String url = tenantSrvAddress + ":" + tenantSrvPort + "/"+ endPoint;//"http://localhost:8092/tenants";
         HttpClient client = HttpClients.createDefault();
         ObjectMapper mapper = new ObjectMapper();
  
@@ -172,7 +177,6 @@ public class DemoRestClient {
 	        HttpResponse response = client.execute(mPost); 
 	        output = response.toString();
 	        mPost.releaseConnection( );
-            //System.out.println("Response from Tenant Srv... : " + output);
         }catch (Exception e) {
                 e.printStackTrace();
         }
@@ -184,10 +188,12 @@ public class DemoRestClient {
 	 
 	
 	
-	public static AuthzResponse authorize(AuthzRequest req, String tenantId) throws Exception {
+	public static AuthzResponse authorize(AuthzRequest req, String tenantId,
+															String authzSrvAddress, String authzSrvPort, 
+															String endPoint) throws Exception {
 		
 		String output = null;
-        String url = "http://localhost:8089/pdps/" + tenantId+"/decision";
+        String url = authzSrvAddress + ":"+ authzSrvPort + endPoint;//"http://localhost:8089/pdps/" + tenantId+"/decision";
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
         try{
