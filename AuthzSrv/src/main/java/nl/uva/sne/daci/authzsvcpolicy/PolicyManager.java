@@ -14,6 +14,7 @@ import oasis.names.tc.xacml._3_0.core.schema.wd_17.PolicyType;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.xml.sax.SAXException;
 
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -35,7 +36,8 @@ public class PolicyManager {
 		config.setMaxTotal(1000);
 		config.setMaxIdle(1000);
 		System.out.println("************* THE REDIS ADDRESS FOR THE POLICY MANAGER " + this.serverAddress);
-		jedisPool = new JedisPool(config, this.serverAddress);
+		HostAndPort.convertHost(this.serverAddress);
+		jedisPool = new JedisPool(config, /*this.serverAddress*/HostAndPort.convertHost(this.serverAddress));
 		//System.out.println("REDIS ADDRESS FOr authz service .. " + this.serverAddress);
 	}
 
