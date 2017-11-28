@@ -41,7 +41,7 @@ public class AuthzSrvController{
 	    	consumes = { "application/json",  "application/xml"},
 	    	produces = { "application/json",  "application/xml"}
   			 )
-  public PDPSvc pdpInstance(@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
+  public PDPSvc pdpInstance(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
 								 /*@RequestParam(value="domain", defaultValue="demo-uva") String domain,*/
 		  						@PathVariable String tenantId/*,
 								@RequestParam(value="request") AuthzRequest request*/) {
@@ -74,7 +74,7 @@ public class AuthzSrvController{
   			 )
   //@ExceptionHandler(IOException.class)
   //@ExceptionHandler(Exception.class)
-  public AuthzResponse pdp(@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
+  public AuthzResponse pdp(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
 								 /*@RequestParam(value="domain", defaultValue="demo-uva") String domain,*/
 		  						 @PathVariable String tenantId,
 								 @RequestBody AuthzRequest request) {
@@ -105,12 +105,12 @@ public class AuthzSrvController{
   			 )
   //@ExceptionHandler(IOException.class)
   //@ExceptionHandler(Exception.class)
-  public String hello(@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
+  public String hello(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
 								 @RequestParam(value="domain", defaultValue="demo-uva") String domain,
 								 @PathVariable String tenantId/*,
 								 @RequestParam(value="request") AuthzRequest request*/) {
 	  try {
-		  return "Hello: Authorization Service --> Address:" + redisAddress + " Domain:" + domain + " tenantId:"+ tenantId;
+		  return "Hello: Authorization Service --> Address:" /*+ redisAddress */+ " Domain:" + domain + " tenantId:"+ tenantId;
 	  }catch(Exception e) {
 			throw new RuntimeException("Couldn't get the message", e);
 	  }
