@@ -35,10 +35,10 @@ public class PolicyManager {
 		GenericObjectPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(1000);
 		config.setMaxIdle(1000);
-		System.out.println("************* THE REDIS ADDRESS FOR THE POLICY MANAGER " + this.serverAddress);
+		/*It seems there is a strange problem of Jedis pool that does not handle the hostname of a 
+		 * (possibly remote) Redis server properly. I created an entry to /etc/hosts for the name/ip*/
 		HostAndPort.convertHost(this.serverAddress);
-		jedisPool = new JedisPool(config, /*this.serverAddress*/HostAndPort.convertHost(this.serverAddress));
-		//System.out.println("REDIS ADDRESS FOr authz service .. " + this.serverAddress);
+		jedisPool = new JedisPool(config, this.serverAddress);
 	}
 
 	public PolicyFinder createPolicyFinder(String tenantId) {
