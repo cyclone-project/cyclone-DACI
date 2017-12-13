@@ -44,8 +44,7 @@ public class PAP {
 	}
 	
 	
-	
-	
+
 	private <T> Map<String, String> loadIntertenantPolicies(String tenantId, T policyName, Jedis jedis){
 		try {
 			
@@ -58,7 +57,7 @@ public class PAP {
 			
 			for(String pId : tenantPolicies.keySet()) {	
 				
-				String pKey = getInterTenantPolicyKey(pId.equals(tenantId) ? pId : tenantId);
+				String pKey = getInterTenantPolicyKey(tenantId);
 				//redisInsertedKeys.add(pKey);
 				jedis.set(pKey, tenantPolicies.get(pId));			
 			}
