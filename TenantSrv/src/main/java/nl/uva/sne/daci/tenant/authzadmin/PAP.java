@@ -49,16 +49,24 @@ public class PAP {
 		try {
 			
 			// load inter-tenant policies to redis
-			Map<String, String> tenantPolicies = null;
+			/*Map<String, String> tenantPolicies = null;
 			if (policyName instanceof InputStream)
 				tenantPolicies = PolicySetupUtil.loadPolicies((InputStream)policyName);
 			else 
 				tenantPolicies = PolicySetupUtil.loadPolicies((String) policyName);
 			
-			for(String pId : tenantPolicies.keySet()) {	
-				
+			for(String pId : tenantPolicies.keySet()) {		
 				String pKey = getInterTenantPolicyKey(tenantId);
-				//redisInsertedKeys.add(pKey);
+				jedis.set(pKey, tenantPolicies.get(pId));			
+			}*/
+			Map<String, String> tenantPolicies = null;
+			if (policyName instanceof InputStream)
+				tenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((InputStream)policyName);
+			else 
+				tenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((String) policyName);
+			
+			for(String pId : tenantPolicies.keySet()) {	//There is only one element	
+				String pKey = getInterTenantPolicyKey(tenantId);
 				jedis.set(pKey, tenantPolicies.get(pId));			
 			}
 			return tenantPolicies;
