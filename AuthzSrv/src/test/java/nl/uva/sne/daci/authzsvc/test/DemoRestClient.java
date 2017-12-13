@@ -47,9 +47,9 @@ public class DemoRestClient {
         DemoRestClient restClient = new DemoRestClient();
         try {
         	restClient.createTenant("Energy_Tenant1", "http://localhost", "8092", "tenants", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", providerPolicy, "http://localhost", "8092", "providerPolicy", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "http://localhost", "8092", "intertenantPolicy", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "http://localhost", "8092", "tenantUserPolicy", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", providerPolicy, "providerPolicy", "http://localhost", "8092", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "intertenantPolicy", "http://localhost", "8092", "localhost", "demo-uva");
+        	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "tenantUserPolicy", "http://localhost", "8092", "localhost", "demo-uva");
         	
         	AuthzRequest ar = AuthzSrvImplTester.createRequest("fisfeps", "listPowerPlants", "execute");	
         	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1","http://localhost", "8089")) 
