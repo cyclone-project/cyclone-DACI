@@ -121,6 +121,38 @@ public class DemoRestClient {
 	}
 
 
+
+	/**
+	 * 
+	 * @param token A grant token in pure string. 
+	 * @return
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private static GrantTokenType convertGrantToken(String token) throws ParserConfigurationException, SAXException, IOException {
+
+		InputStream istream = new ByteArrayInputStream(token.getBytes("UTF-8"));
+
+		// From IS -> DOM -> JAXB -> Object	
+		Document doc = XMLUtil.readXML(istream);
+
+		return XMLUtil.unmarshal(GrantTokenType.class, doc.getDocumentElement());		
+	}
+	
+	
+	private static String print(RequestType request) {		
+		OutputStream os = new ByteArrayOutputStream();				
+		XMLUtil.print((new ObjectFactory()).createRequest(request), RequestType.class, os);		
+		return os.toString();
+	}
+
+
+	private static String print(KeyInfoType keyInfo) {
+		OutputStream os = new ByteArrayOutputStream();				
+		XMLUtil.print((new ObjectFactory()).createKeyInfo(keyInfo), KeyInfoType.class, os);		
+		return os.toString();
+	}
 	
 
 	 

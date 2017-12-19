@@ -39,9 +39,9 @@ public class DemoRestClient {
         
         	restClient.createTenant("EnergyUC_Tenant1", "localhost", "demo-uva");
         	//restClient.deleteTenant("EnergyUC_Tenant2", "localhost", "demo-uva");
-        	restClient.setPolicy("", providerPolicy, "providerPolicy", "localhost", "demo-uva");
-        	restClient.setPolicy("EnergyUC_Tenant1", intertenantPolicy, "intertenantPolicy","localhost","demo-uva");
-        	restClient.setPolicy("EnergyUC_Tenant1", intratenantPolicy, "tenantUserPolicy","localhost","demo-uva");
+        	restClient.setPolicy(providerPolicy, "providerPolicy", "localhost", "demo-uva");
+        	restClient.setPolicy(intertenantPolicy, "intertenantPolicy","localhost","demo-uva");
+        	restClient.setPolicy(intratenantPolicy, "tenantUserPolicy","localhost","demo-uva");
         	
         } catch (Exception e) {
             e.printStackTrace(); 
@@ -50,7 +50,7 @@ public class DemoRestClient {
 
 	
 
-	private void  setPolicy(String tenantId, String policyFile, String endPoint, 
+	private void  setPolicy(/*String tenantId, */String policyFile, String endPoint, 
 											 String redisAddress, String domain) throws Exception {
 		
 		String output = null;
@@ -60,7 +60,7 @@ public class DemoRestClient {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             nameValuePairs.add(new BasicNameValuePair("redisAddress", redisAddress));
             nameValuePairs.add(new BasicNameValuePair("domain", domain));
-            nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
+            //nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
             
             URIBuilder uri = new URIBuilder(url);
             uri.setParameters(nameValuePairs);

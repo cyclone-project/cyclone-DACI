@@ -47,9 +47,9 @@ public class DemoRestClient {
         DemoRestClient restClient = new DemoRestClient();
         try {
         	restClient.createTenant("Energy_Tenant1", "http://localhost", "8092", "tenants", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", providerPolicy, "providerPolicy", "http://localhost", "8092", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intertenantPolicy, "intertenantPolicy", "http://localhost", "8092", "localhost", "demo-uva");
-        	restClient.setPolicy("Energy_Tenant1", intratenantPolicy, "tenantUserPolicy", "http://localhost", "8092", "localhost", "demo-uva");
+        	restClient.setPolicy(providerPolicy, "providerPolicy", "http://localhost", "8092", "localhost", "demo-uva");
+        	restClient.setPolicy(intertenantPolicy, "intertenantPolicy", "http://localhost", "8092", "localhost", "demo-uva");
+        	restClient.setPolicy(intratenantPolicy, "tenantUserPolicy", "http://localhost", "8092", "localhost", "demo-uva");
         	
         	AuthzRequest ar = AuthzSrvImplTester.createRequest("fisfeps", "listPowerPlants", "execute");	
         	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1","http://localhost", "8089")) 
@@ -67,7 +67,7 @@ public class DemoRestClient {
 											  String authzSrvAddress, String authzSrvPort) throws Exception{
 			
 			
-			AuthzSvc.DecisionType res = authorize(ar, tenantId, authzSrvAddress, authzSrvPort,
+			AuthzSvc.DecisionType res = authorize(ar/*, tenantId*/, authzSrvAddress, authzSrvPort,
 					  								"/pdps/" + tenantId+"/decision").getDecision();
 			if (res.equals(AuthzSvc.DecisionType.PERMIT))
 				return readPrivateData();
@@ -111,7 +111,7 @@ public class DemoRestClient {
 
 	
 
-	private void  setPolicy(String tenantId, String policyFile, String endPoint, 
+	private void  setPolicy(/*String tenantId, */String policyFile, String endPoint, 
 											 String tenantSrvAddress, String tenantSrvPort, 
 											 String redisAddress, String domain) throws Exception {
 		
@@ -122,7 +122,7 @@ public class DemoRestClient {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             nameValuePairs.add(new BasicNameValuePair("redisAddress", redisAddress));
             nameValuePairs.add(new BasicNameValuePair("domain", domain));
-            nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
+            //nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
             
             URIBuilder uri = new URIBuilder(url);
             uri.setParameters(nameValuePairs);
@@ -188,11 +188,10 @@ public class DemoRestClient {
 	 
 	
 	
-	public static AuthzResponse authorize(AuthzRequest req, String tenantId,
+	public static AuthzResponse authorize(AuthzRequest req/*, String tenantId*/,
 															String authzSrvAddress, String authzSrvPort, 
 															String endPoint) throws Exception {
 		
-		String output = null;
         String url = authzSrvAddress + ":"+ authzSrvPort + endPoint;//"http://localhost:8089/pdps/" + tenantId+"/decision";
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
@@ -202,15 +201,14 @@ public class DemoRestClient {
             mPost.setHeader("Content-Type", "application/json");
             mPost.setHeader("accept", "application/json");
             
-            mPost.setEntity(new StringEntity(tenantId));
+            //mPost.setEntity(new StringEntity(tenantId));
             mPost.setEntity(new StringEntity(mapper.writeValueAsString(req)));         
             
            /* RestTemplate restTemplate = new RestTemplate();
             restTemplate.exchange(url, mPost, mPost.getEntity(), ContextRequestImpl.class);*/
             HttpResponse response = client.execute(mPost); 
             
-            output = response.toString();
-            mPost.releaseConnection( );
+            mPost.releaseConnection();
 
             return mapper.readValue(response.getEntity().getContent(),AuthzResponse.class);
         }catch(Exception e){

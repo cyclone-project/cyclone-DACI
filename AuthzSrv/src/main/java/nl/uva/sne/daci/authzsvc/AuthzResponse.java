@@ -1,5 +1,7 @@
 package nl.uva.sne.daci.authzsvc;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 //import javax.xml.bind.annotation.XmlRootElement;
 //import javax.xml.bind.annotation.XmlType;
 
@@ -8,6 +10,7 @@ import nl.uva.sne.daci.authzsvc.AuthzSvc.DecisionType;
 
 //@XmlRootElement(name="AuthzResponse", namespace="http://sne.uva.nl/daci/authzsvc")
 //@XmlType(propOrder = {"token", "decision"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthzResponse{
 
 	private String token;

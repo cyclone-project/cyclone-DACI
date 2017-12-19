@@ -41,10 +41,7 @@ public class AuthzSrvController{
 	    	consumes = { "application/json",  "application/xml"},
 	    	produces = { "application/json",  "application/xml"}
   			 )
-  public PDPSvc pdpInstance(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
-								 /*@RequestParam(value="domain", defaultValue="demo-uva") String domain,*/
-		  						@PathVariable String tenantId/*,
-								@RequestParam(value="request") AuthzRequest request*/) {
+  public PDPSvc pdpInstance(@PathVariable String tenantId) {
 	  	
 	  String authzPolicyKeyPrefix = String.format(Configuration.REDIS_KEYPREFIX_FORMAT, Configuration.DOMAIN);
 	  
@@ -57,8 +54,6 @@ public class AuthzSrvController{
 		}catch(Exception e) {
 			throw new RuntimeException("Couldn't get pdp", e);
 		}
-	  //ev = new Evaluator(redisAddress, domain);
-	  //return ev.checkAuthorization(tenantId, request);
   }
 
   
@@ -72,16 +67,10 @@ public class AuthzSrvController{
 	    	consumes = { "application/json",  "application/xml"},
 	    	produces = { "application/json",  "application/xml"}
   			 )
-  //@ExceptionHandler(IOException.class)
-  //@ExceptionHandler(Exception.class)
-  public AuthzResponse pdp(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
-								 /*@RequestParam(value="domain", defaultValue="demo-uva") String domain,*/
-		  						 @PathVariable String tenantId,
-								 @RequestBody AuthzRequest request) {
-	  	
-	  //String authzPolicyKeyPrefix = String.format(Configuration.REDIS_KEYPREFIX_FORMAT, Configuration.DOMAIN);
-	  //PolicyManager policyMgr = new PolicyManager(authzPolicyKeyPrefix, redisAddress);
-	  AuthzSvcImpl authzsvc = new AuthzSvcImpl(/*FT:03.02.2017*//*ctxsvc*/);
+  public AuthzResponse pdp(@PathVariable String tenantId,
+						   @RequestBody AuthzRequest request) {
+
+	  AuthzSvcImpl authzsvc = new AuthzSvcImpl();
 	  authzsvc.init();
 	  try {
 			String encodedTenantId = URLDecoder.decode(tenantId, "UTF-8");			
@@ -92,8 +81,6 @@ public class AuthzSrvController{
 		}catch(Exception e) {
 			throw new RuntimeException("Couldn't evaluate the policy", e);
 		}
-	  //ev = new Evaluator(redisAddress, domain);
-	  //return ev.checkAuthorization(tenantId, request);
   }
   
   
@@ -103,14 +90,12 @@ public class AuthzSrvController{
   			value = "/pdps/{tenantId}/hello",
 	    	method = RequestMethod.GET
   			 )
-  //@ExceptionHandler(IOException.class)
-  //@ExceptionHandler(Exception.class)
   public String hello(//@RequestParam(value="redisAddress", defaultValue="localhost") String redisAddress,
 								 @RequestParam(value="domain", defaultValue="demo-uva") String domain,
 								 @PathVariable String tenantId/*,
 								 @RequestParam(value="request") AuthzRequest request*/) {
 	  try {
-		  return "Hello: Authorization Service --> Address:" /*+ redisAddress */+ " Domain:" + domain + " tenantId:"+ tenantId;
+		  return "Hello: Authorization Service-> Domain:" + domain + " tenantId:"+ tenantId;
 	  }catch(Exception e) {
 			throw new RuntimeException("Couldn't get the message", e);
 	  }

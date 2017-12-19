@@ -104,9 +104,9 @@ public class ContextHandler {
 		log.debug("PDP decision: {}", pdpDecision);
 		
 		if (pdpDecision == AuthzSvc.DecisionType.PERMIT) {
-			ContextRequest ctxRequest = createContextRequest(tenantId, request);			
+			ContextRequest ctxRequest =  createContextRequest(tenantId, request);			
 			
-			return validateContext(ctxRequest, tenantId);
+			return validateContext(tenantId, ctxRequest);
 		}
 		else {
 			log.debug("Decision from ctxservice:{}", pdpDecision);
@@ -127,13 +127,9 @@ public class ContextHandler {
 	 * Otherwise null.
 	 * @throws Exception 
 	 */
-	private AuthzResponse validateContext(ContextRequest ctxRequest, String tenantId) throws Exception {	
+	private AuthzResponse validateContext(String tenantId, ContextRequest ctxRequest) throws Exception {	
 		
-		
-		ContextResponse resp = this.csc.validate(ctxRequest, tenantId);
-		
-				//FT:03.02.2017 this.contextSvc.validate(ctxRequest);
-		
+		ContextResponse resp = this.csc.validate(tenantId, (ContextRequestImpl) ctxRequest);		
 		log.debug("Receive response from contextsvc:{}", resp.getDecision());
 		
 		switch(resp.getDecision()) {

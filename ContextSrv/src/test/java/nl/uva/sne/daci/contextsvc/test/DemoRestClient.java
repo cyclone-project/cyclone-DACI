@@ -39,6 +39,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nl.uva.sne.daci.context.ContextRequest;
+import nl.uva.sne.daci.contextimpl.ContextRequestWrapper;
 import nl.uva.sne.daci.context.ContextResponse;
 import nl.uva.sne.daci.contextimpl.ContextBaseResponse;
 import nl.uva.sne.daci.contextimpl.ContextRequestImpl;
@@ -67,22 +68,19 @@ public class DemoRestClient {
         DemoRestClient restClient = new DemoRestClient();
         try {
         	
-  		  /***** TESTING CODE  -  BEGIN*/
   			ContextSrvImplTester c = new ContextSrvImplTester();
   			List<String> tenants = c.setupPolicies(redisAddress,domain);
-  			c.setupTenantIdentifiers(tenants, redisAddress, domain);
-  	      /***** TESTING CODE  - END*/	
+  			c.setupTenantIdentifiers(tenants, redisAddress, domain);	
   			
-        	
         	/*Build the context request here ...*/
         	
-    		String tenantId = "";//"Bioinformatics_IFB_Tenant1";
+    		String tenantId = "";
     		ContextRequest req = c.buildContextRequest(tenantId);
     		
-    		ContextResponse res = restClient.validate((ContextRequestImpl)req, /*"Bioinformatics_IFB_Tenant1"*/tenantId); //!!!!tenantId=null CHECK THIS, THIS MAY CREATE A PROBLEM!!!!
-    		System.out.println("Response : " + /*res.getDecision().toString()*/ res.getDecision().toString());
+    		ContextResponse res = restClient.validate((ContextRequestImpl)req, tenantId);
+    		System.out.println("Response : " + res.getDecision().toString());
         } catch (Exception e) {
-            e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); 
         }
 
 	}
@@ -101,18 +99,19 @@ public class DemoRestClient {
             System.out.println("Here we are..");
             String tokennew = convertGrantToken(gt);
             System.out.println("Here we are.." + tokennew);*/
-  
+	        
             mPost.setHeader("Content-Type", "application/json");
             mPost.setHeader("accept", "application/json");
             
-            mPost.setEntity(new StringEntity(tenantId));
-            mPost.setEntity(new StringEntity(mapper.writeValueAsString(req)));         
+            ContextRequestWrapper crw = new ContextRequestWrapper();
+	        crw.setRequest(req);
+	        crw.setTenantId(tenantId);
+	        mPost.setEntity(new StringEntity(mapper.writeValueAsString(crw)));       
             
            /* RestTemplate restTemplate = new RestTemplate();
             restTemplate.exchange(url, mPost, mPost.getEntity(), ContextRequestImpl.class);*/
             HttpResponse response = client.execute(mPost); 
             
-            //String output = response.toString();
             mPost.releaseConnection( );
 
             return mapper.readValue(response.getEntity().getContent(),ContextBaseResponse.class);

@@ -44,29 +44,20 @@ public class PAP {
 	}
 	
 	
-
-	private <T> Map<String, String> loadIntertenantPolicies(String tenantId, T policyName, Jedis jedis){
+	/** Intertenant policies:
+	 * (1) PolicySet as parameter, then thy are stored as <PId, Policy> where PId uniquely identifies the tenant
+	 * (2) Policy as parameter, then the given policyId of Policy is used as tenantIdentifier ... */
+	private <T> Map<String, String> loadIntertenantPolicies(/*String tenantId, */T policyName, Jedis jedis){
 		try {
-			
 			// load inter-tenant policies to redis
-			/*Map<String, String> tenantPolicies = null;
+			Map<String, String> tenantPolicies = null;
 			if (policyName instanceof InputStream)
 				tenantPolicies = PolicySetupUtil.loadPolicies((InputStream)policyName);
 			else 
 				tenantPolicies = PolicySetupUtil.loadPolicies((String) policyName);
 			
-			for(String pId : tenantPolicies.keySet()) {		
-				String pKey = getInterTenantPolicyKey(tenantId);
-				jedis.set(pKey, tenantPolicies.get(pId));			
-			}*/
-			Map<String, String> tenantPolicies = null;
-			if (policyName instanceof InputStream)
-				tenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((InputStream)policyName);
-			else 
-				tenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((String) policyName);
-			
-			for(String pId : tenantPolicies.keySet()) {	//There is only one element	
-				String pKey = getInterTenantPolicyKey(tenantId);
+			for(String pId : tenantPolicies.keySet()) {	
+				String pKey = getInterTenantPolicyKey(pId);
 				jedis.set(pKey, tenantPolicies.get(pId));			
 			}
 			return tenantPolicies;
@@ -80,23 +71,21 @@ public class PAP {
 	
 
 	
-	private <T> Map<String, String> loadIntratenantPolicies(String tenantId,T policyName, Jedis jedis, String domain){
+	private <T> Map<String, String> loadIntratenantPolicies(/*String tenantId,*/T policyName, Jedis jedis, String domain){
 		try{
 			
 			Map<String, String> intraTenantPolicies = null;
 			if (policyName instanceof InputStream)	
 				intraTenantPolicies = PolicySetupUtil.loadPolicies((InputStream)policyName);
-				//intraTenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((InputStream)policyName);
 			else 
 				intraTenantPolicies = PolicySetupUtil.loadPolicies((String)policyName);
-				//intraTenantPolicies = PolicySetupUtil.loadPolicyorPolicySets((String)policyName);
 			
 			String authzPolicyKeyPrefix = String.format( Configuration.REDIS_KEYPREFIX_FORMAT, domain);			
+
 			for(String pId : intraTenantPolicies.keySet()) {
-				String pKey = authzPolicyKeyPrefix + ":" + (pId.equals(tenantId) ? pId : tenantId);
-				//redisInsertedKeys.add(pKey);			
-				jedis.set(pKey, intraTenantPolicies.get(pId));
-				System.out.println("Put intra-tenant policy:" + pKey);
+					String pKey = authzPolicyKeyPrefix + ":" + pId;
+					//redisInsertedKeys.add(pKey);			
+					jedis.set(pKey, intraTenantPolicies.get(pId));
 			}
 			return intraTenantPolicies;
 		}catch(Exception e){
@@ -119,19 +108,19 @@ public class PAP {
 		}
 	}
 	
-	public void setIntertenantPolicy(String tenantId, String redisAddress, InputStream policy) throws Exception{
+	public void setIntertenantPolicy(/*String tenantId, */String redisAddress, InputStream policy) throws Exception{
 		Jedis jedis = new Jedis(redisAddress);
 		try {
-			loadIntertenantPolicies(tenantId, policy, jedis);
+			loadIntertenantPolicies(/*tenantId, */policy, jedis);
 		}finally{
 			jedis.disconnect();
 		}
 	}
 	
-	public void setIntratenantPolicy(String tenantId, String redisAddress, InputStream policy) throws Exception{
+	public void setIntratenantPolicy(/*String tenantId, */String redisAddress, InputStream policy) throws Exception{
 		Jedis jedis = new Jedis(redisAddress);
 		try {
-			loadIntratenantPolicies(tenantId, policy, jedis, domain);
+			loadIntratenantPolicies(/*tenantId, */policy, jedis, domain);
 		}finally{
 			jedis.disconnect();
 		}
@@ -139,7 +128,7 @@ public class PAP {
 	
 	
 	/*Setup policies ...*/
-	public List<String> setupPolicies(String tenantId, String redisAddress, String domain) throws Exception {
+	public List<String> setupPolicies(/*String tenantId, */String redisAddress, String domain) throws Exception {
 	
 		Jedis jedis = new Jedis(redisAddress);
 		try {	
@@ -147,11 +136,11 @@ public class PAP {
 			//redisInsertedKeys.add(ctxMan.getProviderPolicyKey());
 			jedis.set(getProviderPolicyKey(), PolicySetupUtil.loadPolicySet(PROVIDER_POLICY1));
 			
-			loadIntertenantPolicies(tenantId, INTERTENANT_POLICY1, jedis);
-			loadIntertenantPolicies(tenantId,INTERTENANT_POLICY2, jedis);
+			loadIntertenantPolicies(INTERTENANT_POLICY1, jedis);
+			loadIntertenantPolicies(INTERTENANT_POLICY2, jedis);
 
-			Map<String, String> tenantPolicies = loadIntratenantPolicies(tenantId, INTRATENANT_POLICY1, jedis,domain);
-			tenantPolicies.putAll(loadIntratenantPolicies(tenantId, INTRATENANT_POLICY2, jedis, domain));
+			Map<String, String> tenantPolicies = loadIntratenantPolicies(/*tenantId, */INTRATENANT_POLICY1, jedis,domain);
+			tenantPolicies.putAll(loadIntratenantPolicies(/*tenantId,*/ INTRATENANT_POLICY2, jedis, domain));
 			
 			return new ArrayList<String>(tenantPolicies.keySet());
 		}finally{

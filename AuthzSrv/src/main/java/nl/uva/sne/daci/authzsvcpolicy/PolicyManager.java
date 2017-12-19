@@ -35,6 +35,7 @@ public class PolicyManager {
 		GenericObjectPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(1000);
 		config.setMaxIdle(1000);
+		
 		/*It seems there is a strange problem of Jedis pool that does not handle the hostname of a 
 		 * (possibly remote) Redis server properly. I created an entry to /etc/hosts for the name/ip*/
 		HostAndPort.convertHost(this.serverAddress);
@@ -68,10 +69,10 @@ public class PolicyManager {
 		 jedis = jedisPool.getResource();
 		}catch(Exception e){
 			System.err.println("Exception getResource " + e.getMessage());
+			e.printStackTrace();
 		}
 		try{
 			String v = jedis.get(key);
-			
 			InputStream is = new ByteArrayInputStream(v.getBytes());
 			
 			try {
@@ -91,7 +92,8 @@ public class PolicyManager {
 			throw new RuntimeException("Unable to marshal policy:" + v);
 			
 		}finally {
-			jedisPool.close();// .returnResource(jedis);
+			jedis.close();
+			//jedisPool.close();// .returnResource(jedis);
 		}		
 	}
 }

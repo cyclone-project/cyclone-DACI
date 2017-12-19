@@ -63,9 +63,9 @@ public class DemoRestClient {
         DemoRestClient restClient = new DemoRestClient();
         try {
         	restClient.createTenant(args[6], args[2], args[3], "tenants", args[4], args[5]);
-        	restClient.setPolicy(args[6], providerPolicy, args[2], args[3],"providerPolicy", args[4], args[5]);
-        	restClient.setPolicy(args[6], intertenantPolicy, args[2], args[3], "intertenantPolicy", args[4], args[5]);
-        	restClient.setPolicy(args[6], intratenantPolicy, args[2], args[3], "tenantUserPolicy", args[4], args[5]);
+        	restClient.setPolicy(providerPolicy, args[2], args[3],"providerPolicy", args[4], args[5]);
+        	restClient.setPolicy(intertenantPolicy, args[2], args[3], "intertenantPolicy", args[4], args[5]);
+        	restClient.setPolicy(intratenantPolicy, args[2], args[3], "tenantUserPolicy", args[4], args[5]);
         	
         	AuthzRequest ar = createRequest(args[7], args[8], "execute");	
         	if (restClient.readPrivateData_Integrated(ar, args[6], args[0], args[1])) 
@@ -126,7 +126,7 @@ public class DemoRestClient {
 	
 	
 
-	private void  setPolicy(String tenantId, String policyFile, String tenantSrvAddress, String tenantSrvPort, 
+	private void  setPolicy(/*String tenantId, */String policyFile, String tenantSrvAddress, String tenantSrvPort, 
 																String endPoint, String redisAddress, 
 																String domain) throws Exception {
 		
@@ -140,7 +140,7 @@ public class DemoRestClient {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             nameValuePairs.add(new BasicNameValuePair("redisAddress", redisAddress));
             nameValuePairs.add(new BasicNameValuePair("domain", domain));
-            nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
+            //nameValuePairs.add(new BasicNameValuePair("tenantId",tenantId));
             
             URIBuilder uri = new URIBuilder(url);
             uri.setParameters(nameValuePairs);

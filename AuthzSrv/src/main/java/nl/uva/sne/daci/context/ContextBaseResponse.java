@@ -3,10 +3,8 @@ package nl.uva.sne.daci.context;
 import nl.uva.sne.daci.context.ContextResponse;
 
 //FT:03.02.2017
-//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-//@JsonIgnoreProperties(ignoreUnknown = true)
-
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContextBaseResponse implements ContextResponse {
 
 	private ContextDecision decision;

@@ -39,11 +39,10 @@ public class ContextSvcImpl implements ContextSvc {
 	//private TokenSvc tokensvc;
 	private TokenSvcClient tsc;
 	
-	public ContextSvcImpl(/*FT:03.02.2017 TokenSvc tokensvc*/) throws Exception {
+	public ContextSvcImpl() throws Exception {
 		this(Configuration.DOMAIN, Configuration.REDIS_SERVER_ADDRESS);
 		
-		//FT:03.02.2017
-		tsc = new TokenSvcClient(Configuration.REDIS_SERVER_ADDRESS); 
+		this.tsc = new TokenSvcClient(Configuration.TOKEN_SVC_URL); 
 		/*if (tokensvc == null)
 			throw new RuntimeException("Cannot connect to the DACI tokenservice");		
 		this.tokensvc = tokensvc;*/		
@@ -52,8 +51,7 @@ public class ContextSvcImpl implements ContextSvc {
 	public ContextSvcImpl(String domain, String redisServerAddr){
 		this.domain = domain;
 		this.redisServerAddress = redisServerAddr;	
-		//FT:03.02.2017
-		this.tsc = new TokenSvcClient(/*Configuration.REDIS_SERVER_ADDRESS*/this.redisServerAddress); 
+		this.tsc = new TokenSvcClient(Configuration.TOKEN_SVC_URL); 
 	}
 		
 	
@@ -104,7 +102,7 @@ public class ContextSvcImpl implements ContextSvc {
 //	}
 
 	@Override
-	public ContextResponse validate(ContextRequest request,/*FT:03.02.2017 : Added TenantID*/ String tenantId){
+	public ContextResponse validate(ContextRequest request,String tenantId){
 		log.debug("Receive request:{}", request.toString());
 		try {
 			return validate(request.getSubjectAttributes(), request.getPermissionAttributes(), tenantId);
@@ -119,7 +117,7 @@ public class ContextSvcImpl implements ContextSvc {
 	
 	
 	private ContextResponse validate(Map<String, String> subject, Map<String, String> permission,
-																/*FT:03.02.2017 : Added TenantID*/ String tenantId) throws Exception {
+																String tenantId) throws Exception {
 		
 		Map<String, String> attrs = new HashMap<String, String>(subject.size() + permission.size());
 		attrs.putAll(subject);
@@ -132,10 +130,12 @@ public class ContextSvcImpl implements ContextSvc {
 					// if this is the ctx for local resource
 					if (isLocalContext(ctx))						
 						return new ContextBaseResponse(ContextDecision.PERMIT);
-					else 
+					else{ 
 					// otherwise, create a grant-token and relay to user for the purpose to get access token
 					// at the remote domain.
+						log.info("Will ask the remote domain .... for " + tenantId);
 						return createGrantTokenResponse(ctx,tenantId);
+					}
 				}					
 				else {
 					// if it's not the root contexts, find the ctx that can validate <ctx_issuer, permission> request
@@ -148,8 +148,8 @@ public class ContextSvcImpl implements ContextSvc {
 		return new ContextBaseResponse();
 	}
 
-	private ContextResponse createGrantTokenResponse(/*FT:03.02.2017 : Added TenantID*/Context ctx, String tenantId) throws Exception {
-		//FT:03.02.2017
+	private ContextResponse createGrantTokenResponse(Context ctx, String tenantId) throws Exception {
+		
 		/*if (this.tokensvc == null)
 			throw new Exception("Cannot connect to tokensvc");*/
 		
@@ -161,9 +161,8 @@ public class ContextSvcImpl implements ContextSvc {
 		RequestType request = createDummyRequest();
 		KeyInfoType userKeyInfo = getDummyKeyInfo();
 				
-		//FT:03.02.2017
 		//String token = this.tokensvc.issueGrantToken("http://demo3.sne.uva.nl/VI/750", request, userKeyInfo);
-		String token = tsc.issueGrantToken(/*"http://demo3.sne.uva.nl/VI/750"*/ tenantId, request, userKeyInfo);
+		String token = tsc.issueGrantToken(tenantId, request, userKeyInfo);
 		
 		ContextResponse resp = new ContextBaseResponse(token);
 		
@@ -178,11 +177,12 @@ public class ContextSvcImpl implements ContextSvc {
 		return DummyRequestGenerator.generate(NUM_ADDITIONAL_ATTR);
 	}
 
+	/** FT: This needs to be fully implemented but in CYCLONE it was not needed...*/
 	private boolean isLocalContext(Context ctx) {
 		// temporary: always for local resource first.
-		return true;
+		//return true;
 		
 		// for testing performance with tokenservice, return false;
-//		return false;
+		return false;
 	}
 }

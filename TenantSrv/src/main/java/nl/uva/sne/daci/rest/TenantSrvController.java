@@ -58,13 +58,13 @@ public class TenantSrvController{
  
     /*Upload intertenant policies ...*/
 	@PostMapping("/intertenantPolicy")
-    public /*List<String>*/void intertenantPolicy(@RequestParam(value="tenantId") String tenantId,
+    public /*List<String>*/void intertenantPolicy(//@RequestParam(value="tenantId") String tenantId,
     											  @RequestParam(value="redisAddress") String redisAddress,
 	  		  									  @RequestParam(value="domain") String domain,
 	  		  									  @RequestParam(value="policy") MultipartFile policyFile) {
     	try {
     		PAP pap =  new PAP(domain);    		
-  	      	pap.setIntertenantPolicy(tenantId, redisAddress, new ByteArrayInputStream(policyFile.getBytes()));
+  	      	pap.setIntertenantPolicy(/*tenantId,*/ redisAddress, new ByteArrayInputStream(policyFile.getBytes()));
     	}catch(Exception e) {
 			throw new RuntimeException("Couldn't set the Trust policies", e);
 		}
@@ -73,20 +73,19 @@ public class TenantSrvController{
     
     /*Upload intratenant policies ...*/
 	@PostMapping("/tenantUserPolicy")
-    public /*List<String>*/void tenantUserPolicy(@RequestParam(value="tenantId") String tenantId,
+    public /*List<String>*/void tenantUserPolicy(//@RequestParam(value="tenantId") String tenantId,
     											 @RequestParam(value="redisAddress") String redisAddress,
 	  		  									 @RequestParam(value="domain") String domain,
 	  		  									 @RequestParam(value="policy") MultipartFile policyFile) {
     	try {
     		/*Here there should be a way of checking if the tenant is stored registered already (i.e. stored in redis)*/
     		TenantSvcImpl tsc = new TenantSvcImpl(redisAddress, domain);
-    		if (!tsc.checkTenant(tenantId)){
+    		/*if (!tsc.checkTenant(tenantId)){
     			System.out.println("Couldn't find the tenant");
-    			//System.err.println("Couldn't find the tenant");
     			return;
-    		};
+    		};*/
     		PAP pap =  new PAP(domain);    		
-  	      	pap.setIntratenantPolicy(tenantId,redisAddress, new ByteArrayInputStream(policyFile.getBytes()));
+  	      	pap.setIntratenantPolicy(redisAddress, new ByteArrayInputStream(policyFile.getBytes()));
     	}catch(Exception e) {
 			throw new RuntimeException("Couldn't set the User policies", e);
 		}

@@ -54,10 +54,15 @@ public class PolicySetupUtil {
 	
 	public static Map<String, String> loadPolicies(String xmlFile) throws ParserConfigurationException, SAXException, IOException {
 		
-		PolicySetType psRoot = XACMLUtil.unmarshalPolicySetType(xmlFile);
-		
-		// map of <policyId, policy_data>
 		Map<String, String> policies = new HashMap<String, String>();
+		PolicyType pRoot = XACMLUtil.unmarshalPolicyType(xmlFile);
+		if (pRoot != null && pRoot.getPolicyId() != null){
+			policies.put(pRoot.getPolicyId(), XACMLUtil.marshal(pRoot));
+			return policies;
+		}
+		
+		PolicySetType psRoot = XACMLUtil.unmarshalPolicySetType(xmlFile);
+		// map of <policyId, policy_data>
 		for(JAXBElement<?> jaxbElement : psRoot.getPolicySetOrPolicyOrPolicySetIdReference()) {
 			
 			Object value = jaxbElement.getValue();
