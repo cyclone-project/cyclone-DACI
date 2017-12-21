@@ -15,6 +15,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.Header;
@@ -50,18 +52,18 @@ public class DemoRestClient {
 
 	
 	
-	String TENANT_ID = "daci_tenant_id";
-	String REQUEST = "daci_request";
-	String KEYINFO = "daci_keyinfo";
+	private String TENANT_ID = "daci_tenant_id";
+	private String REQUEST = "daci_request";
+	private String KEYINFO = "daci_keyinfo";
 	
 	public static void main(String[] args) {
         DemoRestClient restClient = new DemoRestClient();
         try {
         	RequestType req = TokenSvcImplTest.generateRequest(0);
         	KeyInfoType kinfo = TokenSvcImplTest.generateKeyInfo();
-            String token = restClient.issueGrantToken("EnergyUC_Tenant1", req, kinfo);
+            String token = restClient.issueGrantToken("Energy_Tenant1", req, kinfo, "http://localhost", "8091", "tokens/Energy_Tenant1");
                  
-            boolean res = restClient.verifyGrantToken(token);
+            boolean res = restClient.verifyGrantToken(token, "http://localhost", "8091", "tokens");
         	if (res) System.out.println("Valid");
         	else System.out.println("Not valid");
         } catch (Exception e) {
@@ -71,8 +73,10 @@ public class DemoRestClient {
 	}
 
 
-	private boolean verifyGrantToken(String token) throws Exception {
-        String url = "http://localhost:8091/tokens";
+	private boolean verifyGrantToken(String token, 
+			  								String tokenSrvAddress, String tokenSrvPort, 
+			  								String endPoint) throws Exception {
+        String url = tokenSrvAddress + ":" + tokenSrvPort + "/" + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         try{
             HttpPost mPost = new HttpPost(url);  
@@ -80,6 +84,8 @@ public class DemoRestClient {
             mPost.setHeader("accept", "application/xml");
             
             mPost.setEntity(new StringEntity(token));            
+            
+            System.out.println("TOKEN" + token);
             
             HttpResponse response = client.execute(mPost);
             mPost.releaseConnection( );
@@ -93,9 +99,11 @@ public class DemoRestClient {
 		
 	}
 	
-	private String issueGrantToken(String tenantId, RequestType request, KeyInfoType keyinfo) throws Exception {
+	private String issueGrantToken(String tenantId, RequestType request, KeyInfoType keyinfo,
+			  										String tokenSrvAddress, String tokenSrvPort, 
+			  										String endPoint) throws Exception {
 		
-        String url = "http://localhost:8091/tokens/"+tenantId;
+        String url = tokenSrvAddress + ":" + tokenSrvPort + "/" +endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
         try{
@@ -105,9 +113,12 @@ public class DemoRestClient {
             mPost.setEntity(new StringEntity(mapper.writeValueAsString(keyinfo)));
     		mPost.setHeader("content-type", "application/json");
     		mPost.setHeader("accept", "application/xml");
- 
+    		
+    		System.out.println("REQ: "+mapper.writeValueAsString(request));
+    		System.out.println("KEYINFO: "+mapper.writeValueAsString(keyinfo));
+    		
             HttpResponse response = client.execute(mPost);
-            
+                  
             mPost.releaseConnection( );
 
         	ResponseHandler<String> handler = new BasicResponseHandler();

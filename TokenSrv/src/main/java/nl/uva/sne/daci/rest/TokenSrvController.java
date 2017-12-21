@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @EnableAutoConfiguration
 public class TokenSrvController{
 
-  TokenSvcImpl tsc;
   
   private static String baseDir = "tokenSrvFiles/";
   private static String keyAlias = "tokensvc";
@@ -63,7 +62,7 @@ public class TokenSrvController{
   //@ExceptionHandler(Exception.class)
   public String validation(@RequestBody String token) {
 	  try {
-		  tsc = new TokenSvcImpl();
+		  TokenSvcImpl tsc = new TokenSvcImpl();
 		  tsc.setBaseDir(baseDir);
 		  tsc.setKeyAlias(keyAlias);
 		  tsc.setKeyPassword(keyPasswd);
@@ -87,8 +86,8 @@ public class TokenSrvController{
   @RequestMapping(
 			value = "tokens/{tenantId}",
 	    	method = RequestMethod.POST,
-	    	consumes = {/*"application/xml",*/"application/json"/*,"application/x-www-form-urlencoded"*/},
-	    	produces = {"application/xml"/*,"application/json"*/}
+	    	consumes = {"application/xml","application/json"/*,"application/x-www-form-urlencoded"*/},
+	    	produces = {"application/xml","application/json"}
 			 )
   //@ExceptionHandler(IOException.class)
   //@ExceptionHandler(Exception.class)
@@ -101,7 +100,7 @@ public class TokenSrvController{
 	  	
 	  
 	  try {
-		  tsc = new TokenSvcImpl();
+		  TokenSvcImpl tsc = new TokenSvcImpl();
 		  tsc.setBaseDir(baseDir);
 		  tsc.setKeyAlias(keyAlias);
 		  tsc.setKeyPassword(keyPasswd);

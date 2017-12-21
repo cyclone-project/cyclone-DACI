@@ -94,7 +94,7 @@ public class TokenSvcImplTest {
 				
 		AttributeType subjIdAttr = createAttributeType(fac, "subject-id", 
 				"string", 
-				"http://demo3.sne.uva.nl/VI/750/");
+				"Energy_Tenant1");
 
 		AttributesType subj = fac.createAttributesType();
 		subj.getAttribute().add(subjIdAttr);
@@ -103,12 +103,12 @@ public class TokenSvcImplTest {
 		// create resource attr
 		AttributeType res = createAttributeType(fac, "resource-id", 
 				"string", 
-				"http://demo3.uva.nl/vi/745/ComputingNode");
+				"listPowerPlants");
 		
 		// create action attr
 		AttributeType action = createAttributeType(fac, "action-id", 
 				"string", 
-				"SLI:Operate-VR:Stop");
+				"Sexecute");
 				
 		AttributesType permission = fac.createAttributesType();
 		permission.getAttribute().add(res);

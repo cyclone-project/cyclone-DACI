@@ -52,16 +52,6 @@ import nl.uva.sne.daci.contextsvcimpl.ContextSvcImpl;
 public class DemoRestClient {
 	
 	
-	  /***** TESTING CODE  -  BEGIN*/
-		private static final String INTRATENANT_POLICY1 = "policies/BioinformaticsCyclone.IFB1_Tenant.xml";
-		private static final String PROVIDER_POLICY1 = "policies/BioinformaticsCyclone.LAL_ProviderPolicySet.xml";
-		private static final String INTERTENANT_POLICY1 = "policies/BioinformaticsCyclone.IntertenantPolicies.xml";
-		
-		private static String redisAddress = "localhost";
-		private static String domain = "demo-uva";
-		
-	  /***** TESTING CODE  - END*/	
-		
 
 	
 	public static void main(String[] args) {
@@ -69,15 +59,15 @@ public class DemoRestClient {
         try {
         	
   			ContextSrvImplTester c = new ContextSrvImplTester();
-  			List<String> tenants = c.setupPolicies(redisAddress,domain);
-  			c.setupTenantIdentifiers(tenants, redisAddress, domain);	
+  			List<String> tenants = c.setupPolicies(ContextSrvImplTester.redisAddress,ContextSrvImplTester.domain);
+  			c.setupTenantIdentifiers(tenants, ContextSrvImplTester.redisAddress, ContextSrvImplTester.domain);	
   			
         	/*Build the context request here ...*/
         	
-    		String tenantId = "";
+    		String tenantId = "Energy_Tenant1";
     		ContextRequest req = c.buildContextRequest(tenantId);
     		
-    		ContextResponse res = restClient.validate((ContextRequestImpl)req, tenantId);
+    		ContextResponse res = restClient.validate((ContextRequestImpl)req, tenantId, "http://localhost", "8090", "contexts");
     		System.out.println("Response : " + res.getDecision().toString());
         } catch (Exception e) {
             e.printStackTrace(); 
@@ -86,10 +76,12 @@ public class DemoRestClient {
 	}
 	
 
-	private ContextBaseResponse  validate(ContextRequestImpl req, String tenantId) throws Exception {
+	private ContextBaseResponse  validate(ContextRequestImpl req, String tenantId, 
+																  String ctxSrvAddress, String ctxSrvPort, 
+																  String endPoint) throws Exception {
 	
 
-        String url = "http://localhost:8090/contexts";
+        String url = ctxSrvAddress + ":" + ctxSrvPort + "/" + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
         try{

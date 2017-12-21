@@ -51,6 +51,8 @@ public class DemoRestClient {
         	restClient.setPolicy(intertenantPolicy, "intertenantPolicy", "http://localhost", "8092", "localhost", "demo-uva");
         	restClient.setPolicy(intratenantPolicy, "tenantUserPolicy", "http://localhost", "8092", "localhost", "demo-uva");
         	
+        	
+        	
         	AuthzRequest ar = AuthzSrvImplTester.createRequest("fisfeps", "listPowerPlants", "execute");	
         	if (restClient.readPrivateData_Integrated(ar, "Energy_Tenant1","http://localhost", "8089")) 
         		System.out.println("SUCCESS!");
@@ -199,10 +201,12 @@ public class DemoRestClient {
             HttpPost mPost = new HttpPost(url);
             
             mPost.setHeader("Content-Type", "application/json");
-            mPost.setHeader("accept", "application/json");
+            mPost.setHeader("Accept", "application/json");
             
+            System.out.println("STRING : " + mapper.writeValueAsString(req));
             //mPost.setEntity(new StringEntity(tenantId));
-            mPost.setEntity(new StringEntity(mapper.writeValueAsString(req)));         
+            mPost.setEntity(new StringEntity(mapper.writeValueAsString(req))); 
+            
             
            /* RestTemplate restTemplate = new RestTemplate();
             restTemplate.exchange(url, mPost, mPost.getEntity(), ContextRequestImpl.class);*/

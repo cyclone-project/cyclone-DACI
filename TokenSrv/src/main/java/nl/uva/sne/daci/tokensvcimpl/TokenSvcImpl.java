@@ -119,6 +119,7 @@ public class TokenSvcImpl implements TokenSvc {
 	@Override
 	public boolean verifyGrantToken(String token) {
 		
+		
 		if (token == null || token.isEmpty()) {
 			log.error("Null or empty input token");
 			return false;
@@ -127,7 +128,6 @@ public class TokenSvcImpl implements TokenSvc {
 		try {			
 			log.debug("Verify grant-token: input string {}", token);
 			InputStream istream = new ByteArrayInputStream(URLDecoder.decode(token, "UTF-8").getBytes());
-			
 			return grantTokenVerifier.verify(istream);
 			
 		} catch (Exception e) {

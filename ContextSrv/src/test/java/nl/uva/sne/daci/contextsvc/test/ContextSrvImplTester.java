@@ -16,22 +16,23 @@ import redis.clients.jedis.Jedis;
 public class ContextSrvImplTester {
 
 	
-	private static final String INTRATENANT_POLICY1 = "policies/BioinformaticsCyclone.IFB1_Tenant.xml";
-	private static final String PROVIDER_POLICY1 = "policies/BioinformaticsCyclone.LAL_ProviderPolicySet.xml";
-	private static final String INTERTENANT_POLICY1 = "policies/BioinformaticsCyclone.IntertenantPolicies.xml";
+	private static final String INTRATENANT_POLICY1 = "policies/EnergyCyclone.API_Resources_Tenant.xml";
+	private static final String PROVIDER_POLICY1 = "policies/EnergyCyclone.EUC_ProviderPolicySet.xml";
+	private static final String INTERTENANT_POLICY1 = "policies/EnergyCyclone.EUC_inter-tenant-policies.xml";
+	
 	
 	
 	public static String[][] attributes = new String[][]{
 		{"urn:oasis:names:tc:xacml:1.0:action:action-id", /*"SLI:Operate-VR:Stop"*/"execute"},
 		//{"urn:oasis:names:tc:xacml:1.0:subject:subject-role", /*"admin"*/ "Bioinformatics_IFB_Tenant2"},
-		{"urn:oasis:names:tc:xacml:1.0:subject:subject-id", /*"admin"*/ "Bioinformatics_IFB_Tenant2"},
+		{"urn:oasis:names:tc:xacml:1.0:subject:subject-id", /*"admin"*/ "Energy_Tenant1"},
 		//{"urn:oasis:names:tc:xacml:1.0:subject:subject-id", /*"admin"*/ "Bioinformatics_IFB_Tenant1"},
-		{"urn:oasis:names:tc:xacml:1.0:resource:resource-id", /*"http://demo3.uva.nl/vi/745/ComputingNode"*/"App1"}
+		{"urn:oasis:names:tc:xacml:1.0:resource:resource-id", /*"http://demo3.uva.nl/vi/745/ComputingNode"*/"listPowerPlants"}
 	};
 	
 	
-	private static String redisAddress = "localhost";
-	private static String domain = "demo-uva";
+	public static String redisAddress = "localhost";
+	public static String domain = "demo-uva";
 	
 	public static void main(String[] args){
 		try{
@@ -50,8 +51,7 @@ public class ContextSrvImplTester {
 		ContextSvcImpl ctxsvc = new ContextSvcImpl(domain, redisAddress);
 		ctxsvc.init();
 		
-		
-		/*TODO : WHY DO WE NEED TENANT ID here??????????????????????????????????????????????***/
+	
 		String tenantId = "";//"Bioinformatics_IFB_Tenant1";
 		ContextResponse res = ctxsvc.validate(buildContextRequest(tenantId), /*"Bioinformatics_IFB_Tenant1"*/"");
 		System.out.println("Response : " + res.getDecision().toString());
