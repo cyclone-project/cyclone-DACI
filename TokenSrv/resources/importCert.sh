@@ -14,4 +14,4 @@ STOREPASS="trusted"
 
 
 
-keytool -importcert -alias "$ALIAS" -file "$CERTFILE" -keypass $KEYPASS -storetype $STORETYPE -storepass $STOREPASS -keystore $KEYSTORE
+keytool -importcert -alias "$ALIAS" -file tokenSrvFiles/"$CERTFILE" -keypass $KEYPASS -storetype $STORETYPE -storepass $STOREPASS -keystore tokenSrvFiles/$KEYSTORE
