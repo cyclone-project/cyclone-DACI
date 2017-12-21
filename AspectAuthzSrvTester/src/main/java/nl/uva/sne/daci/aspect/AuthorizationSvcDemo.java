@@ -199,8 +199,9 @@ public class AuthorizationSvcDemo {
         String url = "http://localhost:8089/pdps/" + tenantId+"/decision";
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
+        HttpPost mPost = null;
         try{
-            HttpPost mPost = new HttpPost(url);
+            mPost = new HttpPost(url);
             
             mPost.setHeader("Content-Type", "application/json");
             mPost.setHeader("accept", "application/json");
@@ -213,13 +214,13 @@ public class AuthorizationSvcDemo {
             HttpResponse response = client.execute(mPost); 
             
             output = response.toString();
-            mPost.releaseConnection( );
 
             return mapper.readValue(response.getEntity().getContent(),AuthzResponse.class);
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
-        	
-        }	
+        }finally{
+            mPost.releaseConnection( );
+        }
 	}
 	
 }

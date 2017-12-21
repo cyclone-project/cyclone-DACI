@@ -33,8 +33,9 @@ public class ContextSvcClient {
 	
 		HttpClient client = HttpClientBuilder.create().build();
 	    ObjectMapper mapper = new ObjectMapper();
+	    HttpPost mPost = null;
 	    try{
-	        HttpPost mPost = new HttpPost(serviceBaseURL);
+	        mPost = new HttpPost(serviceBaseURL);
 
 	        mPost.setHeader("Content-Type", "application/json");
 	        mPost.setHeader("accept", "application/json");
@@ -46,10 +47,11 @@ public class ContextSvcClient {
 	        
 	        HttpResponse response = client.execute(mPost); 
 	            
-	        mPost.releaseConnection();
 	        return mapper.readValue(response.getEntity().getContent(),ContextBaseResponse.class);
 	    }catch(Exception e){
 	       	throw new Exception("Exception in adding bucket : " + e.getMessage());     	
+	    }finally{
+	    	 mPost.releaseConnection();
 	    }
 	 }
 	

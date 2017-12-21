@@ -84,8 +84,9 @@ public class DemoRestClient {
         String url = ctxSrvAddress + ":" + ctxSrvPort + "/" + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
+        HttpPost mPost = null;
         try{
-            HttpPost mPost = new HttpPost(url);
+            mPost = new HttpPost(url);
 
             /*GrantTokenType gt = convertGrantToken(URLDecoder.decode(token, "UTF-8"));
             System.out.println("Here we are..");
@@ -104,13 +105,12 @@ public class DemoRestClient {
             restTemplate.exchange(url, mPost, mPost.getEntity(), ContextRequestImpl.class);*/
             HttpResponse response = client.execute(mPost); 
             
-            mPost.releaseConnection( );
-
             return mapper.readValue(response.getEntity().getContent(),ContextBaseResponse.class);
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
-        	
-        }	
+        }finally{
+            mPost.releaseConnection( );
+        }
 	}
 	
 	 

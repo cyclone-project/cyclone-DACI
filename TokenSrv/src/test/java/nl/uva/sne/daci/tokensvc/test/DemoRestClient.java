@@ -82,15 +82,11 @@ public class DemoRestClient {
             HttpPost mPost = new HttpPost(url);  
             mPost.setHeader("Content-Type", "application/xml");
             mPost.setHeader("accept", "application/xml");
-            
             mPost.setEntity(new StringEntity(token));            
             
-            System.out.println("TOKEN" + token);
-            
             HttpResponse response = client.execute(mPost);
-            mPost.releaseConnection( );
             String responseString = new BasicResponseHandler().handleResponse(response);
-            
+            mPost.releaseConnection( );
             return new Boolean(responseString);
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
@@ -114,16 +110,11 @@ public class DemoRestClient {
     		mPost.setHeader("content-type", "application/json");
     		mPost.setHeader("accept", "application/xml");
     		
-    		System.out.println("REQ: "+mapper.writeValueAsString(request));
-    		System.out.println("KEYINFO: "+mapper.writeValueAsString(keyinfo));
-    		
             HttpResponse response = client.execute(mPost);
-                  
-            mPost.releaseConnection( );
-
+             
         	ResponseHandler<String> handler = new BasicResponseHandler();
     		String responseString = handler.handleResponse(response);
-    		
+            mPost.releaseConnection( );
     		return responseString;
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());

@@ -202,7 +202,6 @@ public class DemoRestClient {
             System.out.println("Response... : " + output);           
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
-        	
         }	     	
 	}
 	
@@ -215,14 +214,15 @@ public class DemoRestClient {
 										  String authzSrvAddress, String authzSrvPort, 
 										  String endPoint) throws Exception {
 		
-		String output = null;
+		//String output = null;
         String url = authzSrvAddress + ":"+ authzSrvPort + endPoint;
         HttpClient client = HttpClientBuilder.create().build();
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(
         	    DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        HttpPost mPost = null;
         try{
-            HttpPost mPost = new HttpPost(url);
+            mPost = new HttpPost(url);
             
             mPost.setHeader("Content-Type", "application/json");
             mPost.setHeader("accept", "application/json");
@@ -234,13 +234,14 @@ public class DemoRestClient {
             restTemplate.exchange(url, mPost, mPost.getEntity(), ContextRequestImpl.class);*/
             HttpResponse response = client.execute(mPost); 
             
-            output = response.toString();
-            mPost.releaseConnection( );
-
+            //output = response.toString();
+            
             return mapper.readValue(response.getEntity().getContent(),AuthzResponse.class);
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
-        	
-        }	
+        }finally {
+            // release any connection resources used by the method
+        	mPost.releaseConnection( );
+        }
 	}
 }

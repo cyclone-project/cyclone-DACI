@@ -130,9 +130,9 @@ public class TokenSvcClient {
             mPost.setEntity(new StringEntity(token));            
             
             HttpResponse response = client.execute(mPost);
-            mPost.releaseConnection( );
-            String responseString = new BasicResponseHandler().handleResponse(response);
             
+            String responseString = new BasicResponseHandler().handleResponse(response);
+            mPost.releaseConnection( );
             return new Boolean(responseString);
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
@@ -155,12 +155,10 @@ public class TokenSvcClient {
     		mPost.setHeader("accept", "application/xml");
  
             HttpResponse response = client.execute(mPost);
-            
-            mPost.releaseConnection( );
 
         	ResponseHandler<String> handler = new BasicResponseHandler();
     		String responseString = handler.handleResponse(response);
-    		
+    		mPost.releaseConnection( );
     		return responseString;
         }catch(Exception e){
         	throw new Exception("Exception in adding bucket : " + e.getMessage());
