@@ -42,9 +42,9 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 public class DemoRestClient {
 	
 
-	static String providerPolicy = "policies/EnergyCyclone.EUC_ProviderPolicySet.xml";
-	static String intertenantPolicy = "policies/EnergyCyclone.EUC_inter-tenant-policies.xml";
-	static String intratenantPolicy = "policies/EnergyCyclone.API_Resources_Tenant.xml";
+	static String providerPolicy = "policies/EUC-provider-policies-GEN.xml";
+	static String intertenantPolicy = "policies/EUC-intertenant-policies-GEN.xml";
+	static String intratenantPolicy = "policies/EUC-intratenant-policies-GEN.xml";
 	
 	/**
 	 * First create a tenant, then upload policies and send a request.
@@ -62,7 +62,10 @@ public class DemoRestClient {
 	public static void main(String[] args) {
         DemoRestClient restClient = new DemoRestClient();
         try {
-        	restClient.createTenant(args[6], args[2], args[3], "tenants", args[4], args[5]);
+        	for (int i = 0; i < 100; i++){
+        		restClient.createTenant(/*args[6]*/"VPP"+i, args[2], args[3], "tenants", args[4], args[5]);
+        	}
+        	
         	restClient.setPolicy(providerPolicy, args[2], args[3],"providerPolicy", args[4], args[5]);
         	restClient.setPolicy(intertenantPolicy, args[2], args[3], "intertenantPolicy", args[4], args[5]);
         	restClient.setPolicy(intratenantPolicy, args[2], args[3], "tenantUserPolicy", args[4], args[5]);
